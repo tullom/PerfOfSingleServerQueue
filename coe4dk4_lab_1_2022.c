@@ -35,12 +35,13 @@
 #define RANDOM_SEED 5259140
 #define NUMBER_TO_SERVE 50e6
 
-#define SERVICE_TIME 30
-#define ARRIVAL_RATE (1.0/SERVICE_TIME)
+#define SERVICE_TIME 10
+#define ARRIVAL_RATE 0.1
+#define MAX_QUEUE_SIZE 1000
 
 #define BLIP_RATE 10000
 
-#define RUNS_PER_ARRIVAL_RATE 3
+#define RUNS_PER_ARRIVAL_RATE 50
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 /*******************************************************************************/
@@ -58,16 +59,18 @@ int main()
 {
     /* Initalize file pointer */
     FILE * pSave;
-    pSave  = fopen("data50_service_time30.txt", "w");
+    pSave  = fopen("experiment7.txt", "w");
     /* Iterating through different RANDOM_SEED */
     int random_values[RUNS_PER_ARRIVAL_RATE] = {400191540, 400175089, 400186733};
+
+
 
     /* Generate random values */
     for (int i = 3; i < RUNS_PER_ARRIVAL_RATE; i++)
     {
         random_values[i] = random_values[i % 3] + i;
     }
-    float arrival_rates[] = {ARRIVAL_RATE, ARRIVAL_RATE-0.001, ARRIVAL_RATE-0.005, ARRIVAL_RATE-0.01, ARRIVAL_RATE-0.03};
+    float arrival_rates[] = {0.1, 0.099, 0.095, 0.09, 0.07, 0.05, 0.03, 0.01};
     /* Runs for each different arrivate_rate */
     for (int rate = 0; rate < ARRAY_SIZE(arrival_rates); rate++)
     {
@@ -78,11 +81,13 @@ int main()
 
             /* System state variables. */
             int number_in_system = 0;
+            int number_in_queue = 0;
             double next_arrival_time = 0;
             double next_departure_time = 0;
 
             /* Data collection variables. */
             long int total_served = 0;
+            long int total_rejected = 0;
             long int total_arrived = 0;
 
             double total_busy_time = 0;
@@ -92,8 +97,10 @@ int main()
             random_generator_initialize(random_values[seed]);
             /* Set the seed of the random number generator. */
 
+            
+
             /* Process customers until we are finished. */
-            while (total_served < NUMBER_TO_SERVE) {
+            while (total_served + total_rejected < NUMBER_TO_SERVE) {
 
                 /* Test if the next event is a customer arrival or departure. */
                 if(number_in_system == 0 || next_arrival_time < next_departure_time) {
@@ -108,14 +115,25 @@ int main()
                     /* Update our statistics. */
                     integral_of_n += number_in_system * (clock - last_event_time);
                     last_event_time = clock;
-
-                    number_in_system++;
+                    if(number_in_queue < MAX_QUEUE_SIZE)
+                    {
+                        number_in_queue++;
+                        number_in_system++;
+                    }
+                    else
+                    {
+                        total_rejected++;
+                    }
+                        
                     total_arrived++;
 
                     /* If this customer has arrived to an empty system, start its
                     service right away. */
-                    if(number_in_system == 1) next_departure_time = clock + SERVICE_TIME;
-
+                    if(number_in_system == 1) 
+                    {
+                        next_departure_time = clock + SERVICE_TIME;
+                        number_in_queue--;
+                    }
                 }
 
                 else
@@ -139,8 +157,11 @@ int main()
                         * right away.
                         */
 
-                    if(number_in_system > 0) next_departure_time = clock + SERVICE_TIME;
-
+                    if(number_in_system > 0) 
+                    {
+                        next_departure_time = clock + SERVICE_TIME;
+                        number_in_queue--;
+                    }
                     /* 
                         * Every so often, print an activity message to show we are active. 
                         */
@@ -153,14 +174,15 @@ int main()
             /* Output final results. */
             double utilization = total_busy_time/clock;
             double fractionServed = (double) total_served/total_arrived;
+            double fractionRejected = (double) total_rejected/total_arrived;
             double meanNumberInSystem = integral_of_n/clock;
             double meanDelay = integral_of_n/total_served;
-            printf("\nUtilization = %f\n", utilization);
+            // printf("\nUtilization = %f\n", utilization);
             // printf("Fraction served = %f\n", fractionServed);
             // printf("Mean number in system = %f\n", meanNumberInSystem);
             // printf("Mean delay = %f\n", meanDelay);
 
-            fprintf(pSave, "%d, %f, %f, %f, %f, %f\n", random_values[seed], arrival_rates[rate], utilization, fractionServed, meanNumberInSystem, meanDelay);
+            fprintf(pSave, "%d, %f, %f, %f, %f, %f, %f\n", random_values[seed], arrival_rates[rate], utilization, fractionServed, meanNumberInSystem, meanDelay, fractionRejected);
         }
         // fprintf(pSave,"Finished %d runs for arrival rate = %f\n", RUNS_PER_ARRIVAL_RATE, arrival_rates[rate]);
     }
