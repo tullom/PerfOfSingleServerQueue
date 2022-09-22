@@ -37,7 +37,7 @@
 
 #define SERVICE_TIME 10
 #define ARRIVAL_RATE 0.1
-#define MAX_QUEUE_SIZE 1000
+#define MAX_QUEUE_SIZE 50e6
 
 #define BLIP_RATE 10000
 
@@ -59,7 +59,7 @@ int main()
 {
     /* Initalize file pointer */
     FILE * pSave;
-    pSave  = fopen("experiment7.txt", "w");
+    pSave  = fopen("experiment7_queueinf.txt", "w");
     /* Iterating through different RANDOM_SEED */
     int random_values[RUNS_PER_ARRIVAL_RATE] = {400191540, 400175089, 400186733};
 
@@ -70,7 +70,8 @@ int main()
     {
         random_values[i] = random_values[i % 3] + i;
     }
-    float arrival_rates[] = {0.1, 0.099, 0.095, 0.09, 0.07, 0.05, 0.03, 0.01};
+
+    float arrival_rates[] = {0.15, 0.12, 0.105, 0.1, 0.099, 0.095, 0.09, 0.07, 0.05};
     /* Runs for each different arrivate_rate */
     for (int rate = 0; rate < ARRAY_SIZE(arrival_rates); rate++)
     {

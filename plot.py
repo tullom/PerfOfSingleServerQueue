@@ -10,12 +10,11 @@ class Param(IntEnum):
     FRACTION_SERVED = 3
     MEAN_NUMBER_IN_SYSTEM = 4
     MEAN_DELAY = 5
-    TOTAL_CUSTOMERS = 6
-    FRACTION_REJECTED = 7
+    FRACTION_REJECTED = 6
 
 
-#Columns: RANDOM_SEED, arrival_rates, utilization, fractionServed, meanNumberInSystem, meanDelay, totalCustomers
-def plot(file, xcolumn, ycolumn, xlabel, ylabel, ylimUpper=0, ylimLower=0):
+#Columns: random_values[seed], arrival_rates[rate], utilization, fractionServed, meanNumberInSystem, meanDelay, fractionRejected
+def plot(title, file, xcolumn, ycolumn, xlabel, ylabel, ylimUpper=0, ylimLower=0,):
     num_samples = 50
     averages = {}
     with open(file, 'r') as csvfile:
@@ -39,12 +38,13 @@ def plot(file, xcolumn, ycolumn, xlabel, ylabel, ylimUpper=0, ylimLower=0):
     plt.plot(x_output, y_output, color = 'g', linestyle = 'solid', marker = 'o')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.title(title)
     if ylimLower != 0 or ylimUpper != 0:
         plt.ylim(ylimUpper, ylimLower)
     plt.grid()
     plt.show()
 
-def plotTwo(file1, file2, xcolumn, ycolumn, xlabel, ylabel, label1, label2, ylimUpper=0, ylimLower=0):
+def plotTwo(title, file1, file2, xcolumn, ycolumn, xlabel, ylabel, label1, label2, ylimUpper=0, ylimLower=0):
     num_samples = 50
     averages = {}
     with open(file1, 'r') as csvfile:
@@ -92,21 +92,20 @@ def plotTwo(file1, file2, xcolumn, ycolumn, xlabel, ylabel, label1, label2, ylim
         plt.ylim(ylimUpper, ylimLower)
     plt.grid()
     plt.legend()
+    plt.title(title)
     plt.show()
 
 def main():
+    plt.figure(1)
     # plot mean delay versus arrival rate 
-    plot("data50.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
-    # plot for question 3 
-    plot("dataForQ3.txt", Param.TOTAL_CUSTOMERS, Param.MEAN_DELAY, "Number of Customers", "Mean Delay")
-    plot("dataForQ3.txt", Param.TOTAL_CUSTOMERS, Param.FRACTION_SERVED, "Number of Customers", "Fraction Served", 0.0, 1.0)
-    plot("dataForQ3.txt", Param.TOTAL_CUSTOMERS, Param.UTILIZATION, "Number of Customers", "Utilization")
-    #plot for questions 4
-    plotTwo("data50.txt", "data50_service_time30.txt",Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay", "Service = 10", "Service = 30")
-    #plot for question 6
-    plotTwo("data50.txt", "experiment6.txt",Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay", "Service = M/D/1", "Service = M/M/1")
-    #plot for question 7
-    
+    plot("Queue Size: 10", "experiment7_queue10.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
+    plot("Queue Size: 100", "experiment7_queue100.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
+    plot("Queue Size: 1000", "experiment7_queue1000.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
+    plot("Queue Size: Infinity", "experiment7_queueinf.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
+    plot("Queue Size: 10", "experiment7_queue10.txt", Param.ARRIVAL_RATES, Param.FRACTION_REJECTED, "Arrival Rates", "Fraction Rejected")
+    plot("Queue Size: 100", "experiment7_queue100.txt", Param.ARRIVAL_RATES, Param.FRACTION_REJECTED, "Arrival Rates", "Fraction Rejected")
+    plot("Queue Size: 1000", "experiment7_queue1000.txt", Param.ARRIVAL_RATES, Param.FRACTION_REJECTED, "Arrival Rates", "Fraction Rejected")
+    plot("Queue Size: Infinity", "experiment7_queueinf.txt", Param.ARRIVAL_RATES, Param.FRACTION_REJECTED, "Arrival Rates", "Fraction Rejected")
 if __name__ == '__main__':
     main()
 
