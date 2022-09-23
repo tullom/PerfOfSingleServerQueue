@@ -35,8 +35,8 @@
 #define RANDOM_SEED 5259140
 #define NUMBER_TO_SERVE 50e6
 
-#define SERVICE_TIME 30
-#define ARRIVAL_RATE (1.0 / SERVICE_TIME)
+#define SERVICE_TIME 10
+#define ARRIVAL_RATE 0.105
 
 #define BLIP_RATE 10000
 
@@ -58,7 +58,7 @@ int main()
 {
     /* Initalize file pointer */
     FILE *pSave;
-    pSave = fopen("data50_service_time30.txt", "w");
+    pSave = fopen("experiment8_part3.txt", "w");
     /* Iterating through different RANDOM_SEED */
     int random_values[RUNS_PER_ARRIVAL_RATE] = {400191540, 400175089, 400186733};
 
@@ -67,9 +67,11 @@ int main()
     {
         random_values[i] = random_values[i % 3] + i;
     }
-    float arrival_rates[] = {ARRIVAL_RATE, ARRIVAL_RATE - 0.001, ARRIVAL_RATE - 0.005, ARRIVAL_RATE - 0.01, ARRIVAL_RATE - 0.03};
+    // float arrival_rates[] = {0.15, 0.12, 0.105, 0.1, 0.099, 0.095, 0.07};
+    int customers[] = {10000, 20000, 30000, 40000, 50000, 100000, 200000, 500000, 1000000};
+
     /* Runs for each different arrivate_rate */
-    for (int rate = 0; rate < ARRAY_SIZE(arrival_rates); rate++)
+    for (int rate = 0; rate < ARRAY_SIZE(customers); rate++)
     {
         /*  Runs for differnent random seeds*/
         for (int seed = 0; seed < RUNS_PER_ARRIVAL_RATE; seed++)
@@ -93,7 +95,7 @@ int main()
             /* Set the seed of the random number generator. */
 
             /* Process customers until we are finished. */
-            while (total_served < NUMBER_TO_SERVE)
+            while (total_served < customers[rate])
             {
 
                 /* Test if the next event is a customer arrival or departure. */
@@ -106,7 +108,7 @@ int main()
 
                     clock = next_arrival_time;
 
-                    next_arrival_time = clock + (1 / arrival_rates[rate]);
+                    next_arrival_time = clock + (1 / ARRIVAL_RATE);
 
                     /* Update our statistics. */
                     integral_of_n += number_in_system * (clock - last_event_time);
@@ -164,7 +166,7 @@ int main()
             // printf("Mean number in system = %f\n", meanNumberInSystem);
             // printf("Mean delay = %f\n", meanDelay);
 
-            fprintf(pSave, "%d, %f, %f, %f, %f, %f\n", random_values[seed], arrival_rates[rate], utilization, fractionServed, meanNumberInSystem, meanDelay);
+            fprintf(pSave, "%d, %f, %f, %f, %f, %f, %d\n", random_values[seed], ARRIVAL_RATE, utilization, fractionServed, meanNumberInSystem, meanDelay, customers[rate]);
         }
         // fprintf(pSave,"Finished %d runs for arrival rate = %f\n", RUNS_PER_ARRIVAL_RATE, arrival_rates[rate]);
     }
