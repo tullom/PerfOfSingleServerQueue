@@ -103,10 +103,10 @@ def main():
     # # plot mean delay versus arrival rate
     # plot("data50.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
     # plot for question 3
-    plot("experiment8_part3.txt", Param.TOTAL_CUSTOMERS,
-         Param.MEAN_DELAY, "Number of Customers", "Mean Delay")
-    plot("experiment8_part3_exponential.txt", Param.TOTAL_CUSTOMERS,
-         Param.MEAN_DELAY, "Number of Customers", "Mean Delay")
+    # plot("experiment8_part3.txt", Param.TOTAL_CUSTOMERS,
+    #      Param.MEAN_DELAY, "Number of Customers", "Mean Delay")
+    # plot("experiment8_part3_exponential.txt", Param.TOTAL_CUSTOMERS,
+    #      Param.MEAN_DELAY, "Number of Customers", "Mean Delay")
     # plot("dataForQ3.txt", Param.TOTAL_CUSTOMERS, Param.FRACTION_SERVED, "Number of Customers", "Fraction Served", 0.0, 1.0)
     # plot("dataForQ3.txt", Param.TOTAL_CUSTOMERS, Param.UTILIZATION, "Number of Customers", "Utilization")
     # #plot for questions 4
@@ -115,7 +115,8 @@ def main():
     # plotTwo("data50.txt", "experiment6.txt",Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay", "Service = M/D/1", "Service = M/M/1")
     # plot for question 7
     # plot for question 8
-    # plot("experiment8.txt", Param.ARRIVAL_RATES, Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
+    plot("experiment8.txt", Param.ARRIVAL_RATES,
+         Param.MEAN_DELAY, "Arrival Rates", "Mean Delay")
 
 
 if __name__ == '__main__':
