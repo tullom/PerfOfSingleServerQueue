@@ -35,12 +35,12 @@
 #define RANDOM_SEED 5259140
 #define NUMBER_TO_SERVE 50e6
 
-#define SERVICE_TIME 30
-#define ARRIVAL_RATE (1.0/SERVICE_TIME)
+#define SERVICE_TIME 10
+#define ARRIVAL_RATE 0.1
 
 #define BLIP_RATE 10000
 
-#define RUNS_PER_ARRIVAL_RATE 3
+#define RUNS_PER_ARRIVAL_RATE 50
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 /*******************************************************************************/
@@ -58,16 +58,18 @@ int main()
 {
     /* Initalize file pointer */
     FILE * pSave;
-    pSave  = fopen("data50_service_time30.txt", "w");
+    pSave  = fopen("experiment6.txt", "w");
     /* Iterating through different RANDOM_SEED */
     int random_values[RUNS_PER_ARRIVAL_RATE] = {400191540, 400175089, 400186733};
+
+
 
     /* Generate random values */
     for (int i = 3; i < RUNS_PER_ARRIVAL_RATE; i++)
     {
         random_values[i] = random_values[i % 3] + i;
     }
-    float arrival_rates[] = {ARRIVAL_RATE, ARRIVAL_RATE-0.001, ARRIVAL_RATE-0.005, ARRIVAL_RATE-0.01, ARRIVAL_RATE-0.03};
+    float arrival_rates[] = {0.1, 0.099, 0.095, 0.09, 0.07, 0.05, 0.03, 0.01};
     /* Runs for each different arrivate_rate */
     for (int rate = 0; rate < ARRAY_SIZE(arrival_rates); rate++)
     {
@@ -92,6 +94,8 @@ int main()
             random_generator_initialize(random_values[seed]);
             /* Set the seed of the random number generator. */
 
+            
+
             /* Process customers until we are finished. */
             while (total_served < NUMBER_TO_SERVE) {
 
@@ -114,7 +118,7 @@ int main()
 
                     /* If this customer has arrived to an empty system, start its
                     service right away. */
-                    if(number_in_system == 1) next_departure_time = clock + SERVICE_TIME;
+                    if(number_in_system == 1) next_departure_time = clock + exponential_generator((double)SERVICE_TIME);
 
                 }
 
@@ -132,14 +136,14 @@ int main()
 
                     number_in_system--;
                     total_served++;
-                    total_busy_time += SERVICE_TIME;
+                    total_busy_time += exponential_generator((double)SERVICE_TIME);
 
                     /* 
                         * If there are other customers waiting, start one in service
                         * right away.
                         */
 
-                    if(number_in_system > 0) next_departure_time = clock + SERVICE_TIME;
+                    if(number_in_system > 0) next_departure_time = clock + exponential_generator((double)SERVICE_TIME);
 
                     /* 
                         * Every so often, print an activity message to show we are active. 
@@ -155,7 +159,7 @@ int main()
             double fractionServed = (double) total_served/total_arrived;
             double meanNumberInSystem = integral_of_n/clock;
             double meanDelay = integral_of_n/total_served;
-            printf("\nUtilization = %f\n", utilization);
+            // printf("\nUtilization = %f\n", utilization);
             // printf("Fraction served = %f\n", fractionServed);
             // printf("Mean number in system = %f\n", meanNumberInSystem);
             // printf("Mean delay = %f\n", meanDelay);
